@@ -951,7 +951,9 @@ class TAXIIServer:
         endpoint = self.get_endpoint(request.path)
         if endpoint:
             server = endpoint.server
-        else:
+        elif self.servers.taxii1:
             server = self.servers.taxii1
+        else:
+            server = self.servers.taxii2
         context.taxiiserver = server
         return server.raise_unauthorized()
