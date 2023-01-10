@@ -173,6 +173,10 @@ def sync_conf_dict_into_db(server, config, force_collection_deletion=False):
 
 
 def sync_services(server, services):
+    if not server:
+        log.warning("Cannot sync collections with no taxii1 server")
+        return
+
     manager = server.persistence
 
     defined_by_id = {s["id"]: s for s in services}
@@ -213,6 +217,10 @@ def sync_services(server, services):
 
 
 def sync_collections(server, collections, force_deletion=False):
+    if not server:
+        log.warning("Cannot sync collections with no taxii1 server")
+        return
+
     manager = server.persistence
 
     defined_by_name = {c["name"]: c for c in collections}

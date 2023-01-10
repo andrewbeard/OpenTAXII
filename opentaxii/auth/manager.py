@@ -44,8 +44,11 @@ class AuthManager:
         NOTE: Additional method that is only used in the helper scripts
         shipped with OpenTAXII.
         '''
-        for colname, permission in list(account.permissions.items()):
-            collection = self.server.servers.taxii1.persistence.get_collection(colname)
+        for colname, _ in list(account.permissions.items()):
+            if self.server.servers.taxii1:
+                collection = self.server.servers.taxii1.persistence.get_collection(colname)
+            else:
+                collection = None
             if not collection:
                 log.warning(
                     "update_account.unknown_collection",
