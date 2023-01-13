@@ -15,7 +15,6 @@ RUN /venv/bin/pip install /opentaxii
 
 FROM python:3.9-slim AS prod
 LABEL maintainer="EclecticIQ <opentaxii@eclecticiq.com>"
-COPY --from=build /venv /venv
 
 RUN apt-get update \
  && apt-get upgrade -y \
@@ -27,6 +26,8 @@ VOLUME ["/data", "/input"]
 
 COPY ./docker/entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
+
+COPY --from=build /venv /venv
 
 EXPOSE 9000
 ENV PATH "/venv/bin:${PATH}"
