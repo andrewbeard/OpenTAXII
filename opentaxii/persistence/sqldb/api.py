@@ -539,8 +539,7 @@ class Taxii2SQLDatabaseAPI(BaseSQLDatabaseAPI, OpenTAXII2PersistenceAPI):
                 description=api_root.description,
                 is_public=api_root.is_public,
             )
-        else:
-            return None
+        return None
 
     def add_api_root(
         self,
@@ -1010,7 +1009,7 @@ class Taxii2SQLDatabaseAPI(BaseSQLDatabaseAPI, OpenTAXII2PersistenceAPI):
                         serialized_data={
                             key: value
                             for (key, value) in obj.items()
-                            if key not in ["id", "type", "spec_version"]
+                            if key not in ("id", "type", "spec_version")
                         },
                     )
                 )

@@ -112,7 +112,7 @@ class ServerConfig(dict):
 
     @classmethod
     def _load_configs(cls, *configs):
-        result = dict()
+        result = {}
         for config in configs:
             # read content from path-like object
             if not isinstance(config, dict):
@@ -135,7 +135,7 @@ class ServerConfig(dict):
                         f"Running in taxii2-only mode. Dropping deprecated top level taxii1 attribute '{key}'.",
                         DeprecationWarning,
                     )
-                    del options[key]
+                    options.pop(key)
                 else:
                     warn(
                         f"Setting taxii1 attributes at top level is deprecated. Please nest '{key}' inside 'taxii1'.",
@@ -148,7 +148,7 @@ class ServerConfig(dict):
         # Warn user of invalid keys and remove from dict
         for key in [key for key in options if key not in cls.ALL_VALID_OPTIONS]:
             warn(f"Ignoring invalid configuration item '{key}'.")
-            del options[key]
+            options.pop(key)
         if "taxii1" in options and options["taxii1"]:
             for key in [
                 key

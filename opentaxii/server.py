@@ -481,7 +481,7 @@ class TAXII2Server(BaseTAXIIServer):
         response = {
             "title": self.config["title"],
         }
-        for key in ["description", "contact"]:
+        for key in ("description", "contact"):
             if self.config.get(key):
                 response[key] = self.config.get(key)
         default_api_root, api_roots = self.persistence.get_api_roots()
@@ -555,7 +555,7 @@ class TAXII2Server(BaseTAXIIServer):
                     "can_write": collection.can_write(context.account),
                     "media_types": ["application/stix+json;version=2.1"],
                 }
-                for key in ["description", "alias"]:
+                for key in ("description", "alias"):
                     value = getattr(collection, key, None)
                     if value:
                         data[key] = value
@@ -587,7 +587,7 @@ class TAXII2Server(BaseTAXIIServer):
             "can_write": collection.can_write(context.account),
             "media_types": ["application/stix+json;version=2.1"],
         }
-        for key in ["description", "alias"]:
+        for key in ("description", "alias"):
             value = getattr(collection, key, None)
             if value:
                 response[key] = value
@@ -935,16 +935,14 @@ class TAXIIServer:
         server = self.current_server
         if server:
             return server.handle_http_exception(error)
-        else:
-            return error.get_response()
+        return error.get_response()
 
     def handle_validation_exception(self, error):
         """Dispatch validation exception handling to appropriate taxii* server."""
         server = self.current_server
         if server:
             return server.handle_validation_exception(error)
-        else:
-            return error.get_response()
+        return error.get_response()
 
     def raise_unauthorized(self):
         """Dispatch unauthorized handling to appropriate taxii* server."""

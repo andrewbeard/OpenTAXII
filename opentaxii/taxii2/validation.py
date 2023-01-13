@@ -1,4 +1,5 @@
 """Taxii2 validation functions."""
+from contextlib import suppress
 import datetime
 import json
 
@@ -23,7 +24,7 @@ def validate_envelope(json_data: str, allow_custom: bool = False) -> None:
     try:
         data = json.loads(json_data)
     except json.JSONDecodeError as e:
-        raise ValidationError(f"Invalid json: {str(e)}") from e
+        raise ValidationError(f"Invalid json: {e}") from e
     if "objects" not in data:
         raise ValidationError("No objects")
     for item in data["objects"]:
@@ -31,7 +32,7 @@ def validate_envelope(json_data: str, allow_custom: bool = False) -> None:
             parse(item, allow_custom)
         except STIXError as e:
             raise ValidationError(
-                f"Invalid stix object: {json.dumps(item)}; {str(e)}"
+                f"Invalid stix object: {json.dumps(item)}; {e}"
             ) from e
 
 
@@ -72,13 +73,11 @@ class Taxii2VersionFilter(Taxii2Filter):
         values = super()._deserialize(value, attr, data, **kwargs)
         new_values = []
         for value in values:
-            if value not in ["first", "last", "all"]:
-                try:
+            if value not in ("first", "last", "all"):
+                with suppress(ValueError):
                     value = datetime.datetime.strptime(value, DATETIMEFORMAT).replace(
                         tzinfo=datetime.timezone.utc
                     )
-                except ValueError:
-                    pass
             new_values.append(value)
         return new_values
 

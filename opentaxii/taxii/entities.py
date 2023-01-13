@@ -80,7 +80,7 @@ class CollectionEntity(Entity):
         self.volume = volume
         self.description = description
         self.accept_all_content = accept_all_content
-        if type not in [self.TYPE_FEED, self.TYPE_SET]:
+        if type not in (self.TYPE_FEED, self.TYPE_SET):
             raise ValueError('Unknown collection type "%s"' % type)
         self.type = type
         self.supported_content = (

@@ -22,8 +22,7 @@ class GUID(TypeDecorator):
         """Switch implementation based on database dialect."""
         if dialect.name == 'postgresql':
             return dialect.type_descriptor(UUID())
-        else:
-            return dialect.type_descriptor(CHAR(32))
+        return dialect.type_descriptor(CHAR(32))
 
     def process_bind_param(self, value, dialect):
         """Convert from python to database representation."""
@@ -31,21 +30,18 @@ class GUID(TypeDecorator):
             return value
         elif dialect.name == 'postgresql':
             return str(value)
-        else:
-            if not isinstance(value, uuid.UUID):
-                return "%.32x" % uuid.UUID(value).int
-            else:
-                # hexstring
-                return "%.32x" % value.int
+        if not isinstance(value, uuid.UUID):
+            return "%.32x" % uuid.UUID(value).int
+        # hexstring
+        return "%.32x" % value.int
 
     def process_result_value(self, value, dialect):
         """Convert from database to python representation."""
         if value is None:
             return value
-        else:
-            if not isinstance(value, uuid.UUID):
-                value = uuid.UUID(value)
-            return value
+        if not isinstance(value, uuid.UUID):
+            value = uuid.UUID(value)
+        return value
 
 
 class UTCDateTime(TypeDecorator):
@@ -58,15 +54,16 @@ class UTCDateTime(TypeDecorator):
         """Switch implementation based on database dialect."""
         if dialect.name == 'mysql':
             return dialect.type_descriptor(mysql.DATETIME(fsp=6))
-        else:
-            return dialect.type_descriptor(DateTime())
+        return dialect.type_descriptor(DateTime())
 
     def process_bind_param(self, value, engine):
         """Convert from python to database representation."""
         if value is not None:
             return value.astimezone(timezone.utc)
+        #FIXME: What if value IS none?
 
     def process_result_value(self, value, engine):
         """Convert from database to python representation."""
         if value is not None:
             return value.replace(tzinfo=timezone.utc)
+        #FIXME: What if value IS none?
