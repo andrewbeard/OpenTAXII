@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 import structlog
 import yaml
@@ -114,10 +115,13 @@ def add_api_root():
 
 def add_collection():
     """CLI command to add taxii2 collection to database."""
-    existing_api_root_ids = [
-        str(api_root.id)
-        for api_root in app.taxii_server.servers.taxii2.persistence.api.get_api_roots()
-    ]
+    existing_api_root_ids = []
+    default_api_root_id = None
+    for api_root in app.taxii_server.servers.taxii2.persistence.api.get_api_roots():
+        existing_api_root_ids.append(str(api_root.id))
+        if api_root.default:
+            default_api_root_id = str(api_root.id)
+
     parser = argparse.ArgumentParser(
         description=("Add a new taxii2 Collection object."),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -126,7 +130,7 @@ def add_collection():
         "-r",
         "--rootid",
         choices=existing_api_root_ids,
-        required=True,
+        required=False,
         help="Api root id of the collection",
     )
     parser.add_argument("-t", "--title", required=True, help="Title of the collection")
@@ -141,11 +145,19 @@ def add_collection():
         "--public-write", action="store_true", help="allow public write access"
     )
     parser.set_defaults(public=False)
-
     args = parser.parse_args()
+
+    if args.rootid:
+        rootid = args.rootid
+    elif default_api_root_id:
+        rootid = default_api_root_id
+    else:
+        print("Must specify an api root id if no default api exists")
+        sys.exit(1)
+
     with app.app_context():
         app.taxii_server.servers.taxii2.persistence.api.add_collection(
-            api_root_id=args.rootid,
+            api_root_id=rootid,
             title=args.title,
             description=args.description,
             alias=args.alias,
